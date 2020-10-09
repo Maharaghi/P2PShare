@@ -22,30 +22,47 @@
 <body>
   <div id="container">
     <section>
-      <div>
+      <h4 id="connectedID" class="off-left">Connected ID: </h4>
+
+      <div class="center no-float">
         <h4 id="myID">My ID: </h4>
-        <h4 id="connectedID">Connected ID: </h4>
+        <div class="form__group field">
+          <input type="text" class="form__field" placeholder="Host ID" id='idInput' required />
+          <label for="idInput" class="form__label">Host ID</label>
+        </div>
+        <button id="connectButton" class="btn">Connect to id</button>
+        <!-- <div>
+          <input type="text" id="idInput" class="inputbox">
+          <br>
+          <button id="connectButton">Connect to id</button>
+        </div> -->
+        <!-- <div>
+          <form id="fileInfo">
+            <input type="file" id="fileInput" name="files" />
+          </form>
+        </div> -->
+        <div class="drop-wrapper">
+          <div class="drop-zone">
+            <span class="drop-zone__prompt">Drop file here or click to upload</span>
+            <input type="file" name="fileInput" id="fileInput" class="drop-zone__input">
+          </div>
+        </div>
       </div>
-      <div>
-        <input type="text" id="idInput">
-        <button id="connectButton">Connect to id</button>
-      </div>
-      <div>
-        <form id="fileInfo">
-          <input type="file" id="fileInput" name="files" />
-        </form>
-        <button disabled id="sendFile">Send</button>
-        <button disabled id="abortButton">Abort</button>
-      </div>
+      
+      <div class="prog-section">
+        <div class="center">
+          <button disabled id="sendFile" class="btn btn-green">Send</button>
+          <button disabled id="abortButton" class="btn btn-red">Abort</button>
+        </div>
+        <div class="progress center">
+          <div class="label">Send progress: </div>
+          <progress id="sendProgress" max="0" value="0"></progress>
+        </div>
 
-      <div class="progress">
-        <div class="label">Send progress: </div>
-        <progress id="sendProgress" max="0" value="0"></progress>
-      </div>
-
-      <div class="progress">
-        <div class="label">Receive progress: </div>
-        <progress id="receiveProgress" max="0" value="0"></progress>
+        <div class="progress center">
+          <div class="label">Receive progress: </div>
+          <progress id="receiveProgress" max="0" value="0"></progress>
+        </div>
       </div>
 
       <div id="bitrate">

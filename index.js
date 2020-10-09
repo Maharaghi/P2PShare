@@ -32,7 +32,7 @@ wss.on('connection', function connection (ws) {
   console.log('Sending ID');
   ws.send(JSON.stringify({ type: 'id', data: id }));
 
-  function closeRemote() {
+  function closeRemote () {
     if (ws.client) {
       try {
         console.log('Attempting to remove connected client');
@@ -45,7 +45,7 @@ wss.on('connection', function connection (ws) {
   }
 
   ws.on('close', () => {
-    closeRemote()
+    closeRemote();
     delete clients[id];
   });
 
@@ -58,7 +58,11 @@ wss.on('connection', function connection (ws) {
     }
     // console.log(msg, client);
     if (m.type === 'connect') {
-      closeRemote()
+      if (ws.client && ws.client === clients[m.data]) {
+        console.log('User was already connected to this client, stopping connection');
+        return;
+      }
+      closeRemote();
       ws.client = clients[m.data];
       if (!ws.client) {
         ws.client = null;
