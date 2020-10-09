@@ -9,24 +9,23 @@ const sendFileButton = document.querySelector('button#sendFile');
 
 export default class Peer {
   constructor (ws) {
-    this.config = { iceServers: [ { urls: [ 'stun:stun.l.google.com:19302' ] } ], iceTransportPolicy: 'all', iceCandidatePoolSize: '0' };
-    // this.config = {
-    //   iceServers: [
-    //     {
-    //       urls: 'stun:stun.l.google.com:19302'
-    //     }
-    //     // ,
-    //     // {
-    //     //   urls: 'stun:global.stun.twilio.com:3478?transport=udp'
-    //     // },
-    //     // {
-    //     //   url: 'turn:turn.anyfirewall.com:443?transport=tcp',
-    //     //   credential: 'webrtc',
-    //     //   username: 'webrtc'
-    //     // }
-    //   ]
-    // };
-    this.pc = new RTCPeerConnection();
+    // this.config = { iceServers: [ { urls: [ 'stun:stun.l.google.com:19302' ] } ], iceTransportPolicy: 'all', iceCandidatePoolSize: '0' };
+    this.config = {
+      iceServers: [
+        {
+          urls: 'stun:stun.l.google.com:19302'
+        },
+        {
+          urls: 'stun:global.stun.twilio.com:3478?transport=udp'
+        },
+        {
+          urls: 'turn:numb.viagenie.ca',
+          credential: 'muazkh',
+          username: 'webrtc@live.com'
+        }
+      ]
+    };
+    this.pc = new RTCPeerConnection(this.config);
     this._createIceListener();
     this.ws = ws;
 
