@@ -32,7 +32,7 @@ wss.on('connection', function connection (ws) {
   console.log('Sending ID');
   ws.send(JSON.stringify({ type: 'id', data: id }));
 
-  ws.on('close', () => {
+  function closeRemote() {
     if (ws.client) {
       try {
         console.log('Attempting to remove connected client');
@@ -42,6 +42,10 @@ wss.on('connection', function connection (ws) {
         }
       } catch (e) {}
     }
+  }
+
+  ws.on('close', () => {
+    closeRemote()
     delete clients[id];
   });
 
@@ -54,6 +58,7 @@ wss.on('connection', function connection (ws) {
     }
     // console.log(msg, client);
     if (m.type === 'connect') {
+      closeRemote()
       ws.client = clients[m.data];
       if (!ws.client) {
         ws.client = null;
