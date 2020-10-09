@@ -1,3 +1,4 @@
+import './dragndrop.js';
 import Peer from './peer.js';
 
 let localConnection;
@@ -11,10 +12,14 @@ const abortButton = document.querySelector('button#abortButton');
 const sendFileButton = document.querySelector('button#sendFile');
 const myID = document.querySelector('#myID');
 const targetID = document.querySelector('#connectedID');
-const connectButton = document.querySelector('button#connectButton');
+const connectButton = document.querySelector('#connectButton');
 const connectID = document.querySelector('input#idInput');
 
 console.log(host);
+
+// Reset buttons when loading body
+sendFileButton.disabled = true;
+abortButton.disabled = true;
 
 const ws = new WebSocket(host);
 
