@@ -3,7 +3,9 @@ import Peer from './peer.js';
 let localConnection;
 let hasClient = false;
 
-const host = `${window.location.protocol.endsWith('s') ? 'wss' : 'ws'}://${window.location.host}`;
+console.log(window.location.protocol);
+console.log(window.location.protocol.endsWith('s:'));
+const host = `${window.location.protocol.endsWith('s:') ? 'wss' : 'ws'}://${window.location.host}`;
 const fileInput = document.querySelector('input#fileInput');
 const abortButton = document.querySelector('button#abortButton');
 const sendFileButton = document.querySelector('button#sendFile');
