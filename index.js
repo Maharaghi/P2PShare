@@ -50,6 +50,7 @@ wss.on('connection', function connection (ws) {
   });
 
   ws.on('message', (msg) => {
+    if (msg === 'heartbeat') return ws.send('heartbeat');
     let m;
     try {
       m = JSON.parse(msg);
