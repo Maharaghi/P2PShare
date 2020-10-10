@@ -64,9 +64,17 @@ export default class Peer {
     this.sendChannel = this.pc.createDataChannel('sendDataChannel');
     this.sendChannel.binaryType = 'arraybuffer';
 
-    this.sendChannel.addEventListener('open', this.onSendChannelStateChange.bind(this));
+    // this.sendChannel.addEventListener('open', this.onSendChannelStateChange.bind(this));
     this.sendChannel.addEventListener('close', this.onSendChannelStateChange.bind(this));
     this.sendChannel.addEventListener('error', (error) => console.error('Error in sendChannel:', error));
+  }
+
+  bufferSendData () {
+    if (this.sendChannel && this.sendChannel.readyState === 'open') {
+      this.sendData();
+    } else if (this.sendChannel) {
+      this.sendChannel.addEventListener('open', this.onSendChannelStateChange.bind(this));
+    }
   }
 
   async createOffer () {
@@ -148,8 +156,8 @@ export default class Peer {
     }
 
     sendProgress.max = file.size;
-    // const chunkSize = 16384;
-    const chunkSize = 262144;
+    const chunkSize = 16384 * 4;
+    // const chunkSize = 262144;
     this.fileReader = new FileReader();
     let offset = 0;
     this.fileReader.addEventListener('error', (error) => console.error('Error reading file:', error));
@@ -167,10 +175,13 @@ export default class Peer {
         abortButton.disabled = true;
         sendFileButton.disabled = false;
 
-        if (this.statsInterval) {
+        if (this.statsInterval !== null) {
           clearInterval(this.statsInterval);
           this.statsInterval = null;
         }
+
+        const bitrate = Math.round(file.size / (new Date().getTime() - this.timestampStart));
+        bitrateDiv.innerHTML = `<strong>Average Bitrate:</strong> ${bitrate} kb/sec (max: ${this.bitrateMax} kb/sec)`;
 
         this.bytesPrev = 0;
         this.timestampPrev = 0;
@@ -190,6 +201,9 @@ export default class Peer {
       this.timestampStart = new Date().getTime();
       this.timestampPrev = this.timestampStart;
       const s = () => this.displayStats(true);
+      if (this.statsInterval) {
+        clearInterval(this.statsInterval);
+      }
       this.statsInterval = setInterval(s.bind(this), 500);
       const s2 = async () => await this.displayStats(true);
       s2();
@@ -223,13 +237,13 @@ export default class Peer {
       anchor.style.display = 'block';
       downloadAnchor.appendChild(anchor);
 
-      const bitrate = Math.round(this.receivedSize / (new Date().getTime() - this.timestampStart));
-      bitrateDiv.innerHTML = `<strong>Average Bitrate:</strong> ${bitrate} kb/sec (max: ${this.bitrateMax} kb/sec)`;
-
-      if (this.statsInterval) {
+      if (this.statsInterval !== null) {
         clearInterval(this.statsInterval);
         this.statsInterval = null;
       }
+
+      const bitrate = Math.round(this.receivedSize / (new Date().getTime() - this.timestampStart));
+      bitrateDiv.innerHTML = `<strong>Average Bitrate:</strong> ${bitrate} kb/sec (max: ${this.bitrateMax} kb/sec)`;
 
       this.filedata = null;
 
@@ -266,7 +280,7 @@ export default class Peer {
     // re-enable the file select
     fileInput.disabled = false;
     abortButton.disabled = true;
-    sendFileButton.disabled = false;
+    sendFileButton.disabled = true;
   }
 
   async onReceiveChannelStateChange () {
@@ -276,6 +290,9 @@ export default class Peer {
       this.timestampStart = new Date().getTime();
       this.timestampPrev = this.timestampStart;
       const s = () => this.displayStats(false);
+      if (this.statsInterval) {
+        clearInterval(this.statsInterval);
+      }
       this.statsInterval = setInterval(s.bind(this), 500);
       await this.displayStats(false);
     }
@@ -298,7 +315,7 @@ export default class Peer {
           activeCandidatePair = report;
         }
       });
-      console.log('Displaying stats', activeCandidatePair);
+      // console.log('Displaying stats', activeCandidatePair);
       if (activeCandidatePair) {
         if (this.timestampPrev === activeCandidatePair.timestamp) {
           return;

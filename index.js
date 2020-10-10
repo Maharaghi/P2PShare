@@ -72,8 +72,8 @@ wss.on('connection', function connection (ws) {
         return ws.send(JSON.stringify({ type: 'error', data: 'That client is already connected to someone' }));
       }
       ws.client.client = ws;
-      ws.client.send(JSON.stringify({ type: 'connected', data: id }));
-      ws.send(JSON.stringify({ type: 'connected', data: m.data }));
+      ws.client.send(JSON.stringify({ type: 'connected', data: id, host: true }));
+      ws.send(JSON.stringify({ type: 'connected', data: m.data, host: false }));
     } else if (ws.client) {
       ws.client.send(msg);
     }
