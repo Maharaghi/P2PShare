@@ -25,6 +25,7 @@ const ws = new WebSocket(host);
 
 ws.addEventListener('open', () => {
   console.log('WS CONNECTED');
+  ws._heartbeat = setInterval(() => ws.send('heartbeat'), 5000);
 });
 
 ws.addEventListener('close', () => {
@@ -32,6 +33,7 @@ ws.addEventListener('close', () => {
 });
 
 ws.addEventListener('message', async (msg) => {
+  if (msg.data === 'heartbeat') return;
   let message;
   try {
     message = JSON.parse(msg.data);
@@ -53,8 +55,7 @@ ws.addEventListener('message', async (msg) => {
     console.log('Client with id', message.data, 'has connected to you');
     targetID.textContent = 'Connected ID: ' + message.data;
     hasClient = true;
-    if (message.host)
-      onConnectedClient();
+    if (message.host) onConnectedClient();
   } else if (message.type === 'error') {
     console.error(message.data);
   } else if (message.type === 'id') {
