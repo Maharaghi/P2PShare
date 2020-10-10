@@ -55,7 +55,7 @@ wss.on('connection', function connection (ws) {
     try {
       m = JSON.parse(msg);
     } catch (e) {
-      console.error('Could not parse json from message', m);
+      return console.error('Could not parse json from message', m);
     }
     // console.log(msg, client);
     if (m.type === 'connect') {
