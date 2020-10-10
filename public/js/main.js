@@ -53,6 +53,8 @@ ws.addEventListener('message', async (msg) => {
     console.log('Client with id', message.data, 'has connected to you');
     targetID.textContent = 'Connected ID: ' + message.data;
     hasClient = true;
+    if (message.host)
+      onConnectedClient();
   } else if (message.type === 'error') {
     console.error(message.data);
   } else if (message.type === 'id') {
@@ -61,6 +63,7 @@ ws.addEventListener('message', async (msg) => {
     localConnection.closeDataChannels();
     console.log('Client with id', message.data, 'has disconnected');
     targetID.textContent = 'Connected ID: ';
+    hasClient = false;
   }
 });
 
@@ -69,6 +72,8 @@ console.log('Created local peer connection object localConnection');
 
 localConnection.pc.onicegatheringstatechange = (e) => console.log(e);
 localConnection.pc.onicecandidateerror = (e) => console.error(e);
+
+localConnection.createDataChannel();
 
 connectID.value = '';
 
@@ -96,16 +101,20 @@ async function createConnectionWS () {
   abortButton.disabled = false;
   sendFileButton.disabled = true;
 
-  if (!localConnection.sendChannel || localConnection.sendChannel.readyState !== 'open') {
-    localConnection.createDataChannel();
-    console.log('Created send data channel');
-    const offer = await localConnection.createOffer();
-    if (ws.OPEN) {
-      ws.send(JSON.stringify({ type: 'offer', data: offer }));
-    }
-  } else if (localConnection.sendChannel.readyState === 'open') {
-    localConnection.sendData();
-  }
+  // if (!localConnection.sendChannel || localConnection.sendChannel.readyState !== 'open') {
+  //   localConnection.createDataChannel();
+  //   console.log('Created send data channel');
+  // } else if (localConnection.sendChannel.readyState === 'open') {
+  //   localConnection.sendData();
+  // }
+  localConnection.bufferSendData();
 
   fileInput.disabled = true;
+}
+
+async function onConnectedClient () {
+  const offer = await localConnection.createOffer();
+  if (ws.OPEN) {
+    ws.send(JSON.stringify({ type: 'offer', data: offer }));
+  }
 }
